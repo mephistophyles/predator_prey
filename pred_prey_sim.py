@@ -1,4 +1,3 @@
-import copy
 import random
 import time
 
@@ -15,13 +14,13 @@ class Creature(object):
         self.color = color
         self.thickness = thickness
 
+        self.world = world
         self.level = level
         self.eats = eats
         self.hunger = hunger
         self.vegetarian = self.eats == 1
 
-        # a reference to the world object, add here or keep passing it along?
-        self.world = world
+        # beauty of python, we can pass functions as function parameters
         self.move_heuristic = move_heuristic
 
     def display(self, screen):
@@ -72,17 +71,29 @@ class World(object):
                     pg.draw.circle(screen, (0,255,0), (x,y), 5, 5)
 
     def update(self):
-        # TODO make plants procreate
-        pass
+        # TODO clean up this procreation randomness
+        for x in xrange(self.x):
+            for y in xrange(self.y):
+                if self.board[x][y] == 1:
+                    fill = random.random()
+                    # print fill
+                    if fill < 0.01 and x < 790 and y < 590:
+                        self.board[x + 9][y] == 1
+                        self.board[x][y + 9] == 1
+                        self.board[x + 9][y + 9] = 1
 
 
 def main():
     # initialize our world
-    w = World(800, 600)
+    w = World(800, 600, 1000)
     creature_list = []
-    for i in xrange(100):
-        # let's create some herbivores
-        c = Creature(random.randint(0,800), random.randint(0,600), 2, 10, w, 5, (0, 0, 255), 2, 1)
+    # let's create some herbivores
+    for _ in xrange(500):
+        c = Creature(random.randint(0, 800), random.randint(0, 600), 2, 10, w, 5, (0, 0, 255), 2, 1)
+        creature_list.append(c)
+    # let's create some carnivores
+    for _ in xrange(100):
+        c = Creature(random.randint(0, 800), random.randint(0, 600), 3, 25, w, 4, (255, 0, 0), 4, 2)
         creature_list.append(c)
 
     # initializing our display
@@ -95,15 +106,16 @@ def main():
         c.display(screen)
     pg.display.flip()
 
-    # main eventloop
-    for i in xrange(30):
+    # main eventloop TODO: later we will check for input and run indefinitely or till we have an extinction event
+    for i in xrange(100):
+        print "Current plants {}".format(np.sum(w.board))
         screen.fill(background_color)
         w.display(screen)
+        w.update()
         for c in creature_list:
             c.update(w)
             c.display(screen)
         pg.display.flip()
-        time.sleep(0.1)
 
 if __name__ == "__main__":
     main()
