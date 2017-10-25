@@ -108,7 +108,7 @@ def main():
 
     # main eventloop TODO: later we will check for input and run indefinitely or till we have an extinction event
     for i in xrange(100):
-        print "Current plants {}".format(np.sum(w.board))
+        print("Current plants {}".format(np.sum(w.board)))
         screen.fill(background_color)
         w.display(screen)
         w.update()
